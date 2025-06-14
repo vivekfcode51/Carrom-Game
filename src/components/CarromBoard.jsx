@@ -1,3 +1,4 @@
+// src/components/CarronBoard.jsx
 import React, { useState, useEffect } from "react";
 import { setupCoins } from "../utils/setupCoins";
 import { playSound } from "../utils/soundUtils";
@@ -7,7 +8,8 @@ import ResetButton from "./ResetButton";
 
 const CarromBoard = () => {
   const [coins, setCoins] = useState([]);
-  const [striker, setStriker] = useState({ x: 300, y: 530, radius: 15 });
+  // const [striker, setStriker] = useState({ x: 300, y: 530, radius: 15 });
+  const [striker, setStriker] = useState({ x: 300, y: 530, radius: 15, vx: 0, vy: 0 });
   const [turn, setTurn] = useState("Player 1");
   const [scores, setScores] = useState({ "Player 1": 0, "Player 2": 0 });
   const [isAiming, setIsAiming] = useState(false);
@@ -78,7 +80,7 @@ const CarromBoard = () => {
     vx *= friction;
     vy *= friction;
 
-    // Boundaries of inner board
+    // Board boundaries
     const min = 50 + radius;
     const max = 550 - radius;
 
@@ -99,43 +101,53 @@ const CarromBoard = () => {
       vy *= bounce;
     }
 
-    // Handle striker hitting coins
+    // Handle striker hitting coins with improved impulse
     const updatedCoins = coins.map((coin) => {
       const dx = coin.x - x;
       const dy = coin.y - y;
       const dist = Math.hypot(dx, dy);
       const minDist = coin.radius + radius;
 
-      if (dist < minDist) {
+      if (dist < minDist && dist > 0) {
+        const overlap = minDist - dist;
         const angle = Math.atan2(dy, dx);
 
-        const speed = Math.hypot(vx, vy);
-        const transfer = 0.5; // tweak for realism
+        // Resolve overlap
+        coin.x += Math.cos(angle) * overlap / 2;
+        coin.y += Math.sin(angle) * overlap / 2;
+        x -= Math.cos(angle) * overlap / 2;
+        y -= Math.sin(angle) * overlap / 2;
 
-        // Transfer some velocity to coin
-        coin.vx += Math.cos(angle) * speed * transfer;
-        coin.vy += Math.sin(angle) * speed * transfer;
+        // Collision impulse
+        const nx = dx / dist;
+        const ny = dy / dist;
+        const p = 2 * (vx * nx + vy * ny) / 2;
 
-        // Bounce striker back slightly
-        vx *= -0.6;
-        vy *= -0.6;
+        // Transfer impulse to coin
+        coin.vx += p * nx;
+        coin.vy += p * ny;
+
+        // Update striker velocity
+        vx -= p * nx;
+        vy -= p * ny;
       }
 
       return coin;
     });
 
-    setCoins(updatedCoins);
-    setStriker({ x, y, radius }); // striker stays where it ends
+    setCoins([...updatedCoins]); // Trigger rerender
+    setStriker({ x, y, radius });
 
-    // Stop striker when it's slow
     if (Math.abs(vx) < 0.1 && Math.abs(vy) < 0.1) {
       clearInterval(interval);
       switchTurn();
     }
-  }, 16); // 60 FPS
+  }, 16);
 
   playSound("/sounds/strike.mp3");
-};
+  };
+
+
 
 
 

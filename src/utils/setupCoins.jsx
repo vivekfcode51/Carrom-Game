@@ -12,45 +12,33 @@ export const setupCoins = () => {
   const coins = [];
   const center = { x: 300, y: 300 };
   const radius = 10;
-  const spacing = 22;
+  const spacing = 24; // slightly larger for real feel
 
-  const arrangeMixedRing = (centerX, centerY, count, colors, layer = 1) => {
-    const angleGap = (2 * Math.PI) / count;
-    for (let i = 0; i < count; i++) {
-      coins.push({
-        x: centerX + layer * spacing * Math.cos(i * angleGap),
-        y: centerY + layer * spacing * Math.sin(i * angleGap),
-        radius,
-        color: colors[i % colors.length], // Alternate color
-        vx: 0,
-        vy: 0,
-      });
-    }
+  const pushCoin = (x, y, color) => {
+    coins.push({ x, y, radius, color, vx: 0, vy: 0 });
   };
 
-  const arrangeSingleColorRing = (centerX, centerY, count, color, layer = 1) => {
-    const angleGap = (2 * Math.PI) / count;
-    for (let i = 0; i < count; i++) {
-      coins.push({
-        x: centerX + layer * spacing * Math.cos(i * angleGap),
-        y: centerY + layer * spacing * Math.sin(i * angleGap),
-        radius,
-        color,
-        vx: 0,
-        vy: 0,
-      });
-    }
-  };
+  // Add queen at center
+  pushCoin(center.x, center.y, "red");
 
-  // Red queen at center
-  coins.push({ x: center.x, y: center.y, radius, color: "red", vx: 0, vy: 0 });
+  // First ring (6 coins, alternating white-black)
+  for (let i = 0; i < 6; i++) {
+    const angle = (2 * Math.PI * i) / 6;
+    const x = center.x + spacing * Math.cos(angle);
+    const y = center.y + spacing * Math.sin(angle);
+    const color = i % 2 === 0 ? "white" : "black";
+    pushCoin(x, y, color);
+  }
 
-  // Mixed ring (alternating white/black)
-  arrangeMixedRing(center.x, center.y, 12, ["white", "black"], 1);
-
-  // Outer rings
-  arrangeSingleColorRing(center.x, center.y, 3, "white", 2);
-  arrangeSingleColorRing(center.x, center.y, 3, "black", 2);
+  // Second ring (12 coins, alternating white-black)
+  for (let i = 0; i < 12; i++) {
+    const angle = (2 * Math.PI * i) / 12;
+    const x = center.x + spacing * 2 * Math.cos(angle);
+    const y = center.y + spacing * 2 * Math.sin(angle);
+    const color = i % 2 === 0 ? "black" : "white";
+    pushCoin(x, y, color);
+  }
 
   return coins;
 };
+
