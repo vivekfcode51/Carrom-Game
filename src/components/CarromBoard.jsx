@@ -83,6 +83,7 @@ const CarromBoard = () => {
     // Board boundaries
     const min = 50 + radius;
     const max = 550 - radius;
+    
 
     // Wall bounce
     if (x < min) {
