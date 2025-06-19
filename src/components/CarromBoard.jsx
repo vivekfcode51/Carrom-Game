@@ -55,10 +55,12 @@ const CarromBoard = () => {
 
 
 
-  const switchTurn = () => {
-    setTurn((prev) => (prev === "Player 1" ? "Player 2" : "Player 1"));
-    setStriker({ x: 300, y: 530, radius: 15 });
-  };
+  // src/components/CarromBoard.jsx
+const switchTurn = () => {
+  setTurn((prev) => (prev === "Player 1" ? "Player 2" : "Player 1"));
+  setStriker({ x: 300, y: 530, radius: 15 });  // Reset striker position after turn
+};
+
 
   const resetGame = () => {
     setCoins(setupCoins());
@@ -145,25 +147,22 @@ const CarromBoard = () => {
     }
   }, 16);
 
-  playSound("/sounds/strike.mp3");
+  playSound("/sounds/strike");
   };
-
-
-
-
-
 
 
   return (
     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginTop: "20px" }}>
       <ScoreBoard turn={turn} scores={scores} />
       <ResetButton resetGame={resetGame} />
-      <BoardCanvas
+
+      {/* <BoardCanvas
         coins={coins}
         setCoins={setCoins}
         striker={striker}
         setStriker={setStriker}
         turn={turn}
+        setTurn={setTurn}
         setScores={setScores}
         isAiming={isAiming}
         setIsAiming={setIsAiming}
@@ -171,7 +170,26 @@ const CarromBoard = () => {
         setAimPos={setAimPos}
         animateStriker={animateStriker}
         switchTurn={switchTurn}
-      />
+      /> */}
+
+      <BoardCanvas
+  coins={coins}
+  setCoins={setCoins}
+  striker={striker}
+  setStriker={setStriker}
+  turn={turn}
+  setTurn={setTurn}     // ✅ Must be here
+  scores={scores}
+  setScores={setScores}
+  isAiming={isAiming}
+  aimPos={aimPos}
+  animateStriker={animateStriker}
+  switchTurn={switchTurn}
+  setIsAiming={setIsAiming}
+  setAimPos={setAimPos}
+/>
+
+
     </div>
   );
 };

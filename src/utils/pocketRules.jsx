@@ -1,4 +1,4 @@
-// utils/pocketRules.js
+// // utils/pocketRules.js
 const pockets = [
   { x: 0, y: 0 },
   { x: 600, y: 0 },
@@ -14,3 +14,4 @@ export const checkPocket = (coin) => {
   }
   return { pocketed: false };
 };
+

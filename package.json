@@ -10,12 +10,14 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "express": "^5.1.0",
     "framer-motion": "^12.17.0",
     "matter-js": "^0.20.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-hotkeys-hook": "^5.1.0",
-    "react-toastify": "^11.0.5"
+    "react-toastify": "^11.0.5",
+    "socket.io": "^4.8.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.25.0",

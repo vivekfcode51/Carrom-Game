@@ -1,31 +1,29 @@
 // src/utils/physicsUtils.js
-export const checkPocket = (coin, pockets, playSound) => {
-  return pockets.some(p => {
-    const pocketed = Math.hypot(p.x - coin.x, p.y - coin.y) < 20;
-    if (pocketed) playSound("/sounds/pocket.mp3");
-    return pocketed;
-  });
-};
+export const checkPocket = (coin, pockets, playSound, isStriker = false) => {
+  const speed = Math.hypot(coin.vx, coin.vy);
 
-export const handleStrikerCollision = (coin, strikerX, strikerY, strikerRadius) => {
-  const dx = coin.x - strikerX;
-  const dy = coin.y - strikerY;
-  const distance = Math.sqrt(dx * dx + dy * dy);
-  const combinedRadius = coin.radius + strikerRadius;
+  for (const p of pockets) {
+    const d = Math.hypot(coin.x - p.x, coin.y - p.y);
 
-  if (distance < combinedRadius) {
-    // Direction of impact
-    const angle = Math.atan2(dy, dx);
+    // Coin only counts as pocketed if it's close enough AND moving slowly (i.e., not bouncing)
+    if (d < 20 && speed < 0.5 && !coin.pocketed) {
+      coin.pocketed = true; // Mark this coin as pocketed so it doesn't get scored again
 
-    // Speed boost multiplier
-    const force = 2.0; // Increase this for more power (try 2.5 or 3)
+      if (isStriker) {
+        playSound("/sounds/pocket.mp3");
+      } else {
+        playSound("pocket");
+      }
 
-    coin.vx = Math.cos(angle) * force;
-    coin.vy = Math.sin(angle) * force;
+      return true; // Coin was pocketed
+    }
   }
 
-  return coin;
+  return false; // Not pocketed
 };
+
+
+
 
 
 
