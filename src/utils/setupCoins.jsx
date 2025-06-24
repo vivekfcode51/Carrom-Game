@@ -15,12 +15,11 @@ export const setupCoins = () => {
   const spacing = 24; // slightly larger for real feel
 
   const pushCoin = (x, y, color) => {
-    coins.push({ x, y, radius, color, vx: 0, vy: 0 });
+    coins.push({ x, y, radius, color, vx: 0, vy: 0, pocketed: false});
   };
 
   // Add queen at center
   pushCoin(center.x, center.y, "red");
-
   // First ring (6 coins, alternating white-black)
   for (let i = 0; i < 6; i++) {
     const angle = (2 * Math.PI * i) / 6;
