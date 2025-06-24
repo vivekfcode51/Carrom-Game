@@ -13,7 +13,7 @@ const CarromBoard = () => {
   const [queenCoverPending, setQueenCoverPending] = useState(false); // 🆕 Add this
   const [queenPocketedBy, setQueenPocketedBy] = useState(null); // 🆕 Who pocketed queen
   // const [striker, setStriker] = useState({ x: 300, y: 530, radius: 15 });
-  const [striker, setStriker] = useState({ x: 300, y: 530, radius: 15, vx: 0, vy: 0 });
+  const [striker, setStriker] = useState({x: 300, y: 530, radius: 15, vx: 0,vy: 0,});
   const [turn, setTurn] = useState("Player 1");
   const [scores, setScores] = useState({ "Player 1": 0, "Player 2": 0 });
   const [isAiming, setIsAiming] = useState(false);
@@ -56,10 +56,37 @@ const CarromBoard = () => {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [striker, aimPos]);
 
+  useEffect(() => {
+    if (turn === "Player 2") {
+      const timeout = setTimeout(() => {
+        botShoot();
+      }, 1000);
+      return () => clearTimeout(timeout);
+    }
+  }, [turn]);
+
   // src/components/CarromBoard.jsx
+  // const switchTurn = () => {
+  //   setTurn((prev) => (prev === "Player 1" ? "Player 2" : "Player 1"));
+  //   setStriker({ x: 300, y: 530, radius: 15, vx: 0, vy: 0 }); // Reset striker position after turn
+  // };
   const switchTurn = () => {
-    setTurn((prev) => (prev === "Player 1" ? "Player 2" : "Player 1"));
-    setStriker({ x: 300, y: 530, radius: 15, vx: 0, vy: 0 }); // Reset striker position after turn
+    setTurn((prev) => {
+      const next = prev === "Player 1" ? "Player 2" : "Player 1";
+      const y = next === "Player 1" ? 530 : 70;
+      setStriker({ x: 300, y, radius: 15, vx: 0, vy: 0 });
+      return next;
+    });
+  };
+  const botShoot = () => {
+    const angle = Math.random() * Math.PI; // 0 to 180 degrees
+    const speed = 8 + Math.random() * 3;
+    const vx = Math.cos(angle) * speed;
+    const vy = Math.sin(angle) * speed;
+
+    setStriker({ x: 300, y: 70, radius: 15, vx: 0, vy: 0 });
+    playSound("strike");
+    animateStriker({ vx, vy });
   };
 
   const updateScores = (player, points) => {
@@ -68,7 +95,7 @@ const CarromBoard = () => {
 
   const resetGame = () => {
     setCoins(setupCoins());
-    setStriker({ x: 300, y: 530, radius: 15, vx: 0, vy: 0  });
+    setStriker({ x: 300, y: 530, radius: 15, vx: 0, vy: 0 });
     setScores({ "Player 1": 0, "Player 2": 0 });
     setTurn("Player 1");
   };
@@ -166,24 +193,7 @@ const CarromBoard = () => {
     >
       <ScoreBoard turn={turn} scores={scores} />
       <ResetButton resetGame={resetGame} />
-
-      {/* <BoardCanvas
-        coins={coins}
-        setCoins={setCoins}
-        striker={striker}
-        setStriker={setStriker}
-        turn={turn}
-        setTurn={setTurn}
-        setScores={setScores}
-        isAiming={isAiming}
-        setIsAiming={setIsAiming}
-        aimPos={aimPos}
-        setAimPos={setAimPos}
-        animateStriker={animateStriker}
-        switchTurn={switchTurn}
-      /> */}
-
-// props destructure
+      {/* // props destructure */}
       <BoardCanvas
         coins={coins}
         setCoins={setCoins}
@@ -200,11 +210,11 @@ const CarromBoard = () => {
         setIsAiming={setIsAiming}
         setAimPos={setAimPos}
         // queen logic
-         queenPocketedBy={queenPocketedBy}
-         setQueenPocketedBy={setQueenPocketedBy}
-         queenCoverPending={queenCoverPending}
-         setQueenCoverPending={setQueenCoverPending}
-         updateScores={updateScores}
+        queenPocketedBy={queenPocketedBy}
+        setQueenPocketedBy={setQueenPocketedBy}
+        queenCoverPending={queenCoverPending}
+        setQueenCoverPending={setQueenCoverPending}
+        updateScores={updateScores}
       />
     </div>
   );
