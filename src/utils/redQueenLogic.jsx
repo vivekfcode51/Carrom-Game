@@ -17,6 +17,8 @@ export const handleRedQueenRule = ({
   updateScores,
   queenCoverPending,
   queenPocketedBy,
+  setCoins,
+  coins,
 }) => {
   if (coin.color === "red") {
     // Red queen pocketed
@@ -25,12 +27,14 @@ export const handleRedQueenRule = ({
     setQueenCoverPending(true);
   } else if (queenCoverPending && turn === queenPocketedBy) {
     // Covering queen successfully
-    updateScores(turn, 3); // +3 points
+    updateScores(turn, 3); // +3 queen points
     setQueenCoverPending(false);
     setQueenPocketedBy(null);
+    setQueenPocketed(false);
   } else {
     // Normal coin
     updateScores(turn, 1);
   }
 };
+
 

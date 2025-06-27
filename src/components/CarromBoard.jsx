@@ -14,11 +14,15 @@ const CarromBoard = () => {
   const [queenPocketedBy, setQueenPocketedBy] = useState(null); // 🆕 Who pocketed queen
   // const [striker, setStriker] = useState({ x: 300, y: 530, radius: 15 });
   const [striker, setStriker] = useState({x: 300, y: 530, radius: 15, vx: 0,vy: 0,});
+  const [mode, setMode] = useState("bot"); // "bot" or "pvp"
   const [turn, setTurn] = useState("Player 1");
-  const [scores, setScores] = useState({ "Player 1": 0, "Player 2": 0 });
+  const [scores, setScores] = useState({ "Player 1": 0, [mode === "bot" ? "Bot" : "Player 2"]: 0 });
   const [isAiming, setIsAiming] = useState(false);
   const [aimPos, setAimPos] = useState(null);
   const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
+  const [isBotEnabled, setIsBotEnabled] = useState(true);
+  
+
 
   useEffect(() => {
     setCoins(setupCoins());
@@ -57,13 +61,14 @@ const CarromBoard = () => {
   }, [striker, aimPos]);
 
   useEffect(() => {
-    if (turn === "Player 2") {
+    if (mode === "bot" && turn === "Player 2") {
       const timeout = setTimeout(() => {
         botShoot();
       }, 1000);
       return () => clearTimeout(timeout);
     }
-  }, [turn]);
+  }, [turn, mode]);
+
 
   // src/components/CarromBoard.jsx
   // const switchTurn = () => {
@@ -183,41 +188,68 @@ const CarromBoard = () => {
   };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        marginTop: "20px",
-      }}
-    >
-      <ScoreBoard turn={turn} scores={scores} />
-      <ResetButton resetGame={resetGame} />
-      {/* // props destructure */}
-      <BoardCanvas
-        coins={coins}
-        setCoins={setCoins}
-        striker={striker}
-        setStriker={setStriker}
-        turn={turn}
-        setTurn={setTurn} // ✅ Must be here
-        scores={scores}
-        setScores={setScores}
-        isAiming={isAiming}
-        aimPos={aimPos}
-        animateStriker={animateStriker}
-        switchTurn={switchTurn}
-        setIsAiming={setIsAiming}
-        setAimPos={setAimPos}
-        // queen logic
-        queenPocketedBy={queenPocketedBy}
-        setQueenPocketedBy={setQueenPocketedBy}
-        queenCoverPending={queenCoverPending}
-        setQueenCoverPending={setQueenCoverPending}
-        updateScores={updateScores}
-      />
+  <div
+    style={{
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      marginTop: "20px",
+    }}
+  >
+    {/* ✅ 1. Mode Selection Buttons — Add HERE */}
+    <div style={{ display: "flex", gap: "10px", marginBottom: "12px" }}>
+      <button
+  onClick={() => {
+    setMode("bot");
+    setScores({ "Player 1": 0, "Bot": 0 });
+    setTurn("Player 1");
+    resetGame();
+  }}
+>
+  Player 1 vs Bot 🤖
+</button>
+      <button
+  onClick={() => {
+    setMode("pvp");
+    setScores({ "Player 1": 0, "Player 2": 0 });
+    setTurn("Player 1");
+    resetGame();
+  }}
+>
+  Player 1 vs Player 2 👥
+</button>
     </div>
-  );
+
+    {/* ✅ 2. ScoreBoard (below buttons) */}
+    <ScoreBoard turn={turn} scores={scores} mode={mode} />
+
+    {/* ✅ 3. Reset and Board */}
+    <ResetButton resetGame={resetGame} />
+    <BoardCanvas
+      coins={coins}
+      setCoins={setCoins}
+      striker={striker}
+      setStriker={setStriker}
+      turn={turn}
+      setTurn={setTurn}
+      scores={scores}
+      setScores={setScores}
+      isAiming={isAiming}
+      aimPos={aimPos}
+      animateStriker={animateStriker}
+      switchTurn={switchTurn}
+      setIsAiming={setIsAiming}
+      setAimPos={setAimPos}
+      queenPocketedBy={queenPocketedBy}
+      setQueenPocketedBy={setQueenPocketedBy}
+      queenCoverPending={queenCoverPending}
+      setQueenCoverPending={setQueenCoverPending}
+      updateScores={updateScores}
+    />
+  </div>
+);
+
+
 };
 
 export default CarromBoard;
